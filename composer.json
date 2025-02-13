@@ -38,9 +38,6 @@
             "providers": [
                 "Firefly\\FilamentBlog\\FilamentBlogServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-main": "2.0.x-dev"
         }
     },
     "require-dev": {
