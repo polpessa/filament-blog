@@ -139,19 +139,7 @@ class Post extends Model
     public static function getForm()
     {
         return [
-            Section::make('Blog Details'),
-            Section::make('Custom Fields')
-                ->schema([
-                    Repeater::make('customFields')
-                        ->relationship()
-                        ->schema([
-                            TextInput::make('key')
-                                ->required(),
-                            Textarea::make('value')
-                                ->required()
-                        ])
-                        ->collapsible()
-                ])
+            Section::make('Blog Details')
                 ->schema([
                     Fieldset::make('Titles')
                         ->schema([
@@ -233,6 +221,19 @@ class Post extends Model
                         ->default(auth()->id()),
 
                 ]),
+
+            Section::make('Custom Fields')
+                ->schema([
+                    Repeater::make('customFields')
+                        ->relationship()
+                        ->schema([
+                            TextInput::make('key')
+                                ->required(),
+                            Textarea::make('value')
+                                ->required()
+                        ])
+                        ->collapsible()
+                ])
         ];
     }
 
