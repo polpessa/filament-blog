@@ -129,6 +129,16 @@ return new class () extends Migration {
             $table->json('quick_links')->nullable();
             $table->timestamps();
         });
+        
+        Schema::create(config('filamentblog.tables.prefix') . 'custom_fields', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\Firefly\FilamentBlog\Models\Post::class)
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->string('key');
+            $table->text('value');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -149,5 +159,6 @@ return new class () extends Migration {
         Schema::dropIfExists(config('filamentblog.tables.prefix').'post_'.config('filamentblog.tables.prefix').'tag');
         Schema::dropIfExists(config('filamentblog.tables.prefix').'share_snippets');
         Schema::dropIfExists(config('filamentblog.tables.prefix').'settings');
+        Schema::dropIfExists(config('filamentblog.tables.prefix') . 'custom_fields');
     }
 };
