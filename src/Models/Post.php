@@ -64,7 +64,7 @@ class Post extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, config('filamentblog.tables.prefix').'category_'.config('filamentblog.tables.prefix').'post');
+        return $this->belongsToMany(Category::class, config('filamentblog.tables.prefix') . 'category_' . config('filamentblog.tables.prefix') . 'post');
     }
 
     public function comments(): hasmany
@@ -74,7 +74,7 @@ class Post extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class,config('filamentblog.tables.prefix').'post_'.config('filamentblog.tables.prefix').'tag');
+        return $this->belongsToMany(Tag::class, config('filamentblog.tables.prefix') . 'post_' . config('filamentblog.tables.prefix') . 'tag');
     }
 
     public function user(): BelongsTo
@@ -125,20 +125,32 @@ class Post extends Model
     public function relatedPosts($take = 3)
     {
         return $this->whereHas('categories', function ($query) {
-            $query->whereIn(config('filamentblog.tables.prefix').'categories.id', $this->categories->pluck('id'))
-                ->whereNotIn(config('filamentblog.tables.prefix').'posts.id', [$this->id]);
+            $query->whereIn(config('filamentblog.tables.prefix') . 'categories.id', $this->categories->pluck('id'))
+                ->whereNotIn(config('filamentblog.tables.prefix') . 'posts.id', [$this->id]);
         })->published()->with('user')->take($take)->get();
     }
 
     protected function getFeaturePhotoAttribute()
     {
-        return asset('storage/'.$this->cover_photo_path);
+        return asset('storage/' . $this->cover_photo_path);
     }
 
     public static function getForm()
     {
         return [
-            Section::make('Blog Details')
+            Section::make('Blog Details'),
+            Section::make('Custom Fields')
+                ->schema([
+                    Repeater::make('customFields')
+                        ->relationship()
+                        ->schema([
+                            TextInput::make('key')
+                                ->required(),
+                            Textarea::make('value')
+                                ->required()
+                        ])
+                        ->collapsible()
+                ])
                 ->schema([
                     Fieldset::make('Titles')
                         ->schema([
@@ -152,12 +164,12 @@ class Post extends Model
 
                             TextInput::make('title')
                                 ->live(true)
-                                ->afterStateUpdated(fn (Set $set, ?string $state) => $set(
+                                ->afterStateUpdated(fn(Set $set, ?string $state) => $set(
                                     'slug',
                                     Str::slug($state)
                                 ))
                                 ->required()
-                                ->unique(config('filamentblog.tables.prefix').'posts', 'title', null, 'id')
+                                ->unique(config('filamentblog.tables.prefix') . 'posts', 'title', null, 'id')
                                 ->maxLength(255),
 
                             TextInput::make('slug')
@@ -226,5 +238,10 @@ class Post extends Model
     public function getTable()
     {
         return config('filamentblog.tables.prefix') . 'posts';
+    }
+
+    public function customFields(): HasMany
+    {
+        return $this->hasMany(CustomField::class);
     }
 }

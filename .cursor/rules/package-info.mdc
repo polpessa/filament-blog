@@ -1,0 +1,12 @@
+---
+description: general info
+globs: 
+---
+
+this project is a fork of https://uithub.com/thefireflytech/filament-blog
+
+The main package is a plugin for Laravel Filament, that adds blog functionality to Filament.
+
+This fork is aimed at customising the package for my needs:
+- removing some required fields like cover photos being mandatory
+- adding custom fields to posts
