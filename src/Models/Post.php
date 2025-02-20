@@ -190,9 +190,7 @@ class Post extends Model
                                 ->hint('This cover image is used in your blog post as a feature image. Recommended image size 1200 X 628')
                                 ->image()
                                 ->preserveFilenames()
-                                ->imageEditor()
-                                ->maxSize(1024 * 5)
-                                ->rules('dimensions:max_width=1920,max_height=1004'),
+                                ->imageEditor(),
                             TextInput::make('photo_alt_text'),
                         ])->columns(1),
 
