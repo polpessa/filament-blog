@@ -225,10 +225,8 @@ class Post extends Model
                     Repeater::make('customFields')
                         ->relationship()
                         ->schema([
-                            TextInput::make('key')
-                                ->required(),
+                            TextInput::make('key'),
                             Textarea::make('value')
-                                ->required()
                         ])
                         ->collapsible()
                 ])
