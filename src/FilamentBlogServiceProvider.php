@@ -12,6 +12,7 @@ use Firefly\FilamentBlog\Components\RecentPost;
 use Firefly\FilamentBlog\Console\Commands\RenameTablesCommand;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -50,7 +51,6 @@ class FilamentBlogServiceProvider extends PackageServiceProvider
                         $installCommand->info('========================================================================================================');
                         $installCommand->info("Get ready to breathe easy! Our package has just saved you from a day's worth of headaches and hassle.");
                         $installCommand->info('========================================================================================================');
-
                     });
             });
         //        $this->loadTestingMigration();
@@ -58,8 +58,18 @@ class FilamentBlogServiceProvider extends PackageServiceProvider
 
     public function register()
     {
+        // Allow admins (or any authenticated users) to preview unpublished posts while keeping
+        // the public-facing behaviour unchanged. Unauthenticated visitors will still only see
+        // published posts, but logged-in users can access any post by slug.
         Route::bind('post', function ($value) {
-            return \Firefly\FilamentBlog\Models\Post::where('slug', $value)->published()->firstOrFail();
+            $query = \Firefly\FilamentBlog\Models\Post::where('slug', $value);
+
+            // If the visitor is not logged in, restrict to published posts only.
+            if (!filament()->auth()->check()) {
+                $query->published();
+            }
+
+            return $query->firstOrFail();
         });
 
         $this->app->register(EventServiceProvider::class);
@@ -74,7 +84,7 @@ class FilamentBlogServiceProvider extends PackageServiceProvider
     public function loadTestingMigration(): void
     {
         if ($this->app->environment('testing')) {
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
     }
 }
